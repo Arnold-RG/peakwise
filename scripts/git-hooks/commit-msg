@@ -1,0 +1,5 @@
+#!/bin/sh
+# Keep commits attributed only to the repository owner.
+tmp="$1.tmp"
+grep -v "^Co-authored-by:" "$1" > "$tmp"
+mv "$tmp" "$1"

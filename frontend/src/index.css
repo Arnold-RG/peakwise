@@ -1,0 +1,126 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --paper: #f4efe4;
+  --ink: #231c16;
+  --rule: #d7cbb8;
+  --brick: #b55233;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Atkinson Hyperlegible", ui-sans-serif, system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.55;
+}
+
+.dark body {
+  background: #1c1814;
+  color: #f4efe4;
+}
+
+.paper-sheet {
+  background-color: #fbf8f2;
+  background-image:
+    linear-gradient(to right, rgba(35, 28, 22, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(35, 28, 22, 0.035) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.dark .paper-sheet {
+  background-color: #1c1814;
+  background-image:
+    linear-gradient(to right, rgba(244, 239, 228, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(244, 239, 228, 0.04) 1px, transparent 1px);
+}
+
+.spectrum-grid {
+  background-image:
+    linear-gradient(to right, rgba(35, 28, 22, 0.05) 1px, transparent 1px),
+    linear-gradient(to top, rgba(35, 28, 22, 0.05) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+.dark .spectrum-grid {
+  background-image:
+    linear-gradient(to right, rgba(244, 239, 228, 0.06) 1px, transparent 1px),
+    linear-gradient(to top, rgba(244, 239, 228, 0.06) 1px, transparent 1px);
+}
+
+svg.mol-svg {
+  width: 100%;
+  height: auto;
+}
+
+.dark svg.mol-svg path,
+.dark svg.mol-svg text {
+  stroke: #f4efe4 !important;
+  fill: #f4efe4 !important;
+}
+
+@layer components {
+  .paper-card {
+    @apply border border-[#d7cbb8] dark:border-[#3a322a] bg-[#fbf8f2] dark:bg-[#241f1a] shadow-page;
+  }
+  .field {
+    @apply w-full min-h-11 bg-[#fbf8f2] dark:bg-[#1c1814] border border-[#d7cbb8] dark:border-[#3a322a] px-3 py-2 text-base md:text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brick/40 focus:border-brick;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 min-h-11 bg-brick hover:bg-brick-600 text-[#fbf8f2] px-4 py-2 font-medium disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 min-h-11 border border-[#d7cbb8] dark:border-[#3a322a] bg-transparent px-4 py-2 hover:bg-[#efe6d6] dark:hover:bg-[#2a241e];
+  }
+  .quiet {
+    @apply text-ink-400 dark:text-[#cbbdaa];
+  }
+}
+
+.skip-link {
+  position: absolute;
+  left: 0.75rem;
+  top: -3rem;
+  z-index: 50;
+  background: #231c16;
+  color: #f4efe4;
+  padding: 0.5rem 0.75rem;
+}
+.skip-link:focus {
+  top: 0.75rem;
+}
+
+:focus-visible {
+  outline: 3px solid #b55233;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media print {
+  header nav,
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white;
+    color: black;
+  }
+}

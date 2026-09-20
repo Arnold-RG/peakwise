@@ -1,0 +1,13 @@
+{
+  "name": "Peakwise",
+  "short_name": "Peakwise",
+  "description": "Name the molecule in your mass spectrum. LC-MS/MS peaks to SMILES.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#F4EFE4",
+  "theme_color": "#F4EFE4",
+  "icons": [
+    { "src": "logo.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

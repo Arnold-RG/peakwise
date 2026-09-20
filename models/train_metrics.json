@@ -1,0 +1,6 @@
+{
+  "n_train_spectra": 678,
+  "train_fp_tanimoto": 0.8417,
+  "n_features": 168,
+  "n_bits": 256
+}
