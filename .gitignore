@@ -18,3 +18,4 @@ backend/app/data/eval_report.json
 models/*.joblib
 models/*.pkl
 !models/.gitkeep
+.cursorrules
