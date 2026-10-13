@@ -63,15 +63,10 @@ let live: boolean | null = null;
 export async function isLive(): Promise<boolean> {
   if (live !== null) return live;
   try {
-    await api.get("/ping", { timeout: 4000 });
-    live = true;
+    const res = await api.get("/health", { timeout: 3500 });
+    live = res.status >= 200 && res.status < 300;
   } catch {
-    try {
-      await api.get("/health", { timeout: 12000 });
-      live = true;
-    } catch {
-      live = false;
-    }
+    live = false;
   }
   return live;
 }
@@ -100,7 +95,21 @@ export async function simulateMolecule(payload: Record<string, unknown>) {
     return data;
   }
   const examples = await loadDemoExamples();
-  const hit = examples.find((e) => e.smiles === payload.smiles) || examples[0];
+  const hit = examples.find((e) => e.smiles === payload.smiles);
+  if (!hit) {
+    return {
+      smiles: payload.smiles,
+      formula: null,
+      peaks: [],
+      precursor_mz: null,
+      svg: null,
+      descriptors: {},
+      isotope_pattern: [],
+      annotations: [],
+      demo: true,
+      note: "This browser can draw a spectrum only for the bundled examples. Start the local API to simulate any structure.",
+    };
+  }
   return {
     ...hit,
     exact_mass: hit.precursor_mz - 1.007,

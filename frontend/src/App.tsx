@@ -1,147 +1,196 @@
-import { Menu, Moon, Sun, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { fetchHealth } from "./api";
-import { BRAND, asset } from "./brand";
+import { asset, BRAND, NAV, type PageId } from "./brand";
 import { BatchPage } from "./pages/BatchPage";
 import { DiscoverPage } from "./pages/DiscoverPage";
-import { EvaluatePage } from "./pages/EvaluatePage";
 import { HelpPage } from "./pages/HelpPage";
 import { LibraryPage } from "./pages/LibraryPage";
 import { MethodsPage } from "./pages/MethodsPage";
 import { OverviewPage } from "./pages/OverviewPage";
 import { SimulatePage } from "./pages/SimulatePage";
 import { WorkbenchPage } from "./pages/WorkbenchPage";
+import { prefersReducedMotion } from "./theme";
 
-const NAV = [
-  { id: "overview", label: "Home" },
-  { id: "workbench", label: "Identify" },
-  { id: "library", label: "Library" },
-  { id: "simulate", label: "From a structure" },
-  { id: "discover", label: "Nearby molecules" },
-  { id: "batch", label: "Many spectra" },
-  { id: "evaluate", label: "How well it works" },
-  { id: "help", label: "Plain English" },
-  { id: "methods", label: "How it works" },
-] as const;
+const EvaluatePage = lazy(() => import("./pages/EvaluatePage").then((mod) => ({ default: mod.EvaluatePage })));
 
-type PageId = (typeof NAV)[number]["id"];
+const GROUPS = ["Open", "Work", "Read"] as const;
+
+function pageFromHash(): PageId {
+  const id = window.location.hash.replace(/^#/, "");
+  const match = NAV.find((item) => item.id === id);
+  return match ? match.id : "overview";
+}
+
+function storedTheme(): boolean {
+  try {
+    const stored = localStorage.getItem("peakwise-theme");
+    if (stored === "dark") return true;
+    if (stored === "light") return false;
+  } catch {
+    /* storage can be blocked */
+  }
+  return window.matchMedia("(prefers-color-scheme: dark)").matches;
+}
 
 export default function App() {
-  const [page, setPage] = useState<PageId>("overview");
-  const [dark, setDark] = useState(false);
+  const [page, setPage] = useState<PageId>(pageFromHash);
+  const [dark, setDark] = useState(storedTheme);
+  const [themeChosen, setThemeChosen] = useState(() => {
+    try {
+      const stored = localStorage.getItem("peakwise-theme");
+      return stored === "dark" || stored === "light";
+    } catch {
+      return false;
+    }
+  });
   const [menu, setMenu] = useState(false);
   const [health, setHealth] = useState<Record<string, unknown> | null>(null);
+  const [healthKnown, setHealthKnown] = useState(false);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
     document.documentElement.style.colorScheme = dark ? "dark" : "light";
-  }, [dark]);
+    document.getElementById("theme-color")?.setAttribute("content", dark ? "#141210" : "#f7f2ea");
+    if (!themeChosen) return;
+    try {
+      localStorage.setItem("peakwise-theme", dark ? "dark" : "light");
+    } catch {
+      /* ignore */
+    }
+  }, [dark, themeChosen]);
 
   useEffect(() => {
-    fetchHealth().then(setHealth).catch(() => setHealth({ demo: true }));
+    if (themeChosen) return;
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const onChange = () => setDark(media.matches);
+    media.addEventListener("change", onChange);
+    return () => media.removeEventListener("change", onChange);
+  }, [themeChosen]);
+
+  useEffect(() => {
+    fetchHealth()
+      .then(setHealth)
+      .catch(() => setHealth({ demo: true }))
+      .finally(() => setHealthKnown(true));
   }, []);
 
-  const demo = Boolean(health?.demo) || !health || health.status === "demo";
+  useEffect(() => {
+    const sync = () => setPage(pageFromHash());
+    window.addEventListener("hashchange", sync);
+    return () => window.removeEventListener("hashchange", sync);
+  }, []);
+
+  useEffect(() => {
+    const title = NAV.find((item) => item.id === page)?.title ?? BRAND.name;
+    document.title = title;
+    window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? "auto" : "smooth" });
+  }, [page]);
+
+  useEffect(() => {
+    if (!menu) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMenu(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [menu]);
+
+  const demo = healthKnown && (Boolean(health?.demo) || !health || health?.status === "demo");
 
   function go(id: PageId) {
-    setPage(id);
+    const next = `#${id}`;
+    if (window.location.hash !== next) window.location.hash = next;
+    else setPage(id);
     setMenu(false);
-    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   return (
-    <div className="min-h-screen paper-sheet text-ink dark:text-paper-100">
+    <div className="sheet">
       <a href="#main" className="skip-link">
         Skip to content
       </a>
-      <header className="border-b border-[#d7cbb8] dark:border-[#3a322a] bg-[#f4efe4]/90 dark:bg-[#1c1814]/90 backdrop-blur-sm sticky top-0 z-20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
-          <button type="button" onClick={() => go("overview")} className="flex items-center gap-3 text-left min-h-11">
-            <img src={asset("logo.png")} alt="" width={48} height={48} className="h-12 w-12 object-cover border border-[#d7cbb8]" />
-            <span>
-              <span className="block font-serif text-2xl leading-none">{BRAND.name}</span>
-              <span className="block text-sm quiet mt-0.5">{BRAND.tagline}</span>
+      <header className="topbar">
+        <div className="topbar-inner">
+          <button type="button" className="brand" onClick={() => go("overview")}>
+            <img src={asset("logo.png")} alt="" width={48} height={48} className="mark" />
+            <span className="brand-text">
+              <span className="brand-name">{BRAND.name}</span>
+              <span className="brand-tag">{BRAND.tagline}</span>
             </span>
           </button>
-          <div className="flex items-center gap-2">
-            <span className="hidden sm:inline text-xs quiet">
-              {demo ? "Browser demo" : `${health?.library_size ?? "—"} spectra · live`}
-            </span>
+          <div className="top-actions">
+            <span className="status">{healthKnown ? (demo ? "Browser demo" : `${health?.library_size ?? "—"} spectra · live`) : ""}</span>
             <button
               type="button"
-              onClick={() => setDark((v) => !v)}
-              className="min-h-11 min-w-11 px-2 border border-[#d7cbb8] dark:border-[#3a322a]"
-              aria-label={dark ? "Switch to light paper theme" : "Switch to dark ink theme"}
+              className="btn-ghost"
+              style={{ minHeight: "2.5rem", paddingInline: "0.85rem" }}
+              aria-pressed={dark}
+              onClick={() => {
+                setThemeChosen(true);
+                setDark((value) => !value);
+              }}
             >
-              {dark ? <Sun className="h-4 w-4 mx-auto" /> : <Moon className="h-4 w-4 mx-auto" />}
+              {dark ? "Light" : "Dark"}
             </button>
             <button
               type="button"
-              className="md:hidden min-h-11 min-w-11 border border-[#d7cbb8]"
-              onClick={() => setMenu((v) => !v)}
+              className="btn-ghost menu-toggle"
+              style={{ minHeight: "2.5rem", paddingInline: "0.85rem" }}
               aria-expanded={menu}
               aria-controls="site-nav"
-              aria-label="Menu"
+              onClick={() => setMenu((value) => !value)}
             >
-              {menu ? <X className="h-5 w-5 mx-auto" /> : <Menu className="h-5 w-5 mx-auto" />}
+              {menu ? "Close" : "Menu"}
             </button>
           </div>
         </div>
-        <nav
-          id="site-nav"
-          aria-label="Main"
-          className={`${menu ? "block" : "hidden"} md:block border-t border-[#d7cbb8] dark:border-[#3a322a]`}
-        >
-          <div className="max-w-6xl mx-auto px-2 sm:px-4 flex flex-col md:flex-row md:flex-wrap">
-            {NAV.map((item) => {
-              const active = page === item.id;
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => go(item.id)}
-                  aria-current={active ? "page" : undefined}
-                  className={`text-left min-h-11 px-3 py-2 text-sm border-b-2 ${
-                    active
-                      ? "border-brick text-brick font-bold"
-                      : "border-transparent quiet hover:text-ink dark:hover:text-paper-100 hover:border-[#d7cbb8]"
-                  }`}
-                >
+      </header>
+      <div className="frame">
+        <nav id="site-nav" className={menu ? "rail open" : "rail"} aria-label="Main">
+          {GROUPS.map((group) => (
+            <div key={group}>
+              <p className="nav-group">{group}</p>
+              {NAV.filter((item) => item.group === group).map((item) => (
+                <button key={item.id} type="button" className="nav-link" aria-current={page === item.id ? "page" : undefined} onClick={() => go(item.id)}>
                   {item.label}
                 </button>
-              );
-            })}
-          </div>
+              ))}
+            </div>
+          ))}
         </nav>
-      </header>
-      {demo ? (
-        <div className="bg-brick-100 text-ink text-sm px-4 py-2 text-center">
-          You are on the public demo. It runs in any browser, including GitHub Pages. For the trained model, start the local API.
+        <div className="main-wrap">
+          {demo ? (
+            <p className="notice" role="status">
+              You are on the public demo. It runs in any browser, including GitHub Pages. For the trained model, start the local API.
+            </p>
+          ) : null}
+          <main id="main" tabIndex={-1}>
+            <div key={page} className="page-in">
+              {page === "overview" ? <OverviewPage onOpen={(id) => go(id as PageId)} demo={demo} /> : null}
+              {page === "workbench" ? <WorkbenchPage /> : null}
+              {page === "library" ? <LibraryPage /> : null}
+              {page === "simulate" ? <SimulatePage /> : null}
+              {page === "discover" ? <DiscoverPage /> : null}
+              {page === "batch" ? <BatchPage demo={demo} /> : null}
+              {page === "evaluate" ? (
+                <Suspense fallback={<p className="quiet">Opening the figures…</p>}>
+                  <EvaluatePage />
+                </Suspense>
+              ) : null}
+              {page === "help" ? <HelpPage onOpen={(id) => go(id as PageId)} /> : null}
+              {page === "methods" ? <MethodsPage /> : null}
+            </div>
+          </main>
+          <footer className="footer">
+            <div className="footer-inner">
+              <p>Peakwise is a small lab tool: peaks in, a named molecule out. Not a medical device. Treat every name as a hypothesis.</p>
+              <p>
+                <a href="https://github.com/Arnold-RG/peakwise">Source on GitHub</a>
+              </p>
+            </div>
+          </footer>
         </div>
-      ) : null}
-      <main id="main" className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
-        {page === "overview" ? <OverviewPage onOpen={(id) => go(id as PageId)} demo={demo} /> : null}
-        {page === "workbench" ? <WorkbenchPage /> : null}
-        {page === "library" ? <LibraryPage /> : null}
-        {page === "simulate" ? <SimulatePage /> : null}
-        {page === "discover" ? <DiscoverPage /> : null}
-        {page === "batch" ? <BatchPage /> : null}
-        {page === "evaluate" ? <EvaluatePage /> : null}
-        {page === "help" ? <HelpPage onOpen={(id) => go(id as PageId)} /> : null}
-        {page === "methods" ? <MethodsPage /> : null}
-      </main>
-      <footer className="border-t border-[#d7cbb8] dark:border-[#3a322a] px-4 py-8 text-sm quiet">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <p>
-            {BRAND.name} is a small lab tool: peaks in, a named molecule out. Not a medical device.
-          </p>
-          <p>
-            <a className="underline decoration-brick/60 underline-offset-4" href="https://github.com/Arnold-RG/peakwise" rel="noreferrer">
-              Source on GitHub
-            </a>
-          </p>
-        </div>
-      </footer>
+      </div>
     </div>
   );
 }

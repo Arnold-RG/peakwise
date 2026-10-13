@@ -3,22 +3,64 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#F4EFE4" />
-    <meta name="color-scheme" content="light dark" />
     <title>Peakwise — name the molecule in your mass spectrum</title>
-    <meta name="description" content="Peakwise turns LC-MS/MS peak lists into ranked chemical structures (SMILES). Use it in the browser, on a phone, or from GitHub Pages." />
-    <meta property="og:title" content="Peakwise" />
-    <meta property="og:description" content="Name the molecule in your mass spectrum." />
-    <meta property="og:image" content="/logo.png" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" href="/logo.png" />
-    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="description" content="Peakwise turns an LC-MS/MS peak list into ranked chemical structures. It runs in the browser, including on a phone and on GitHub Pages." />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://arnold-rg.github.io/peakwise/" />
+    <meta name="theme-color" content="#f7f2ea" id="theme-color" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="application-name" content="Peakwise" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Peakwise" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:title" content="Peakwise — name the molecule in your mass spectrum" />
+    <meta property="og:description" content="Paste LC-MS/MS peaks. Peakwise suggests the chemical structure behind them." />
+    <meta property="og:url" content="https://arnold-rg.github.io/peakwise/" />
+    <meta property="og:image" content="https://arnold-rg.github.io/peakwise/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Peakwise. A mass spectrum drawn on warm paper, with one peak marked in garnet." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Peakwise — name the molecule in your mass spectrum" />
+    <meta name="twitter:description" content="Paste LC-MS/MS peaks. Peakwise suggests the chemical structure behind them." />
+    <meta name="twitter:image" content="https://arnold-rg.github.io/peakwise/og.png" />
+    <meta name="twitter:image:alt" content="Peakwise. A mass spectrum drawn on warm paper, with one peak marked in garnet." />
+    <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
+    <link rel="apple-touch-icon" href="%BASE_URL%apple-touch-icon.png" />
+    <link rel="manifest" href="%BASE_URL%manifest.webmanifest" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Fraunces:opsz,wght@9..144,500;9..144,650&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,620&family=IBM+Plex+Mono:wght@400;500&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Peakwise",
+        "url": "https://arnold-rg.github.io/peakwise/",
+        "description": "Turns LC-MS/MS peak lists into ranked chemical structures.",
+        "applicationCategory": "ScienceApplication",
+        "operatingSystem": "Any",
+        "browserRequirements": "Requires a modern browser",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+      }
+    </script>
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem("peakwise-theme");
+          var dark = stored === "dark" || (stored !== "light" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+          var root = document.documentElement;
+          if (dark) root.classList.add("dark");
+          root.style.colorScheme = dark ? "dark" : "light";
+          var meta = document.getElementById("theme-color");
+          if (meta) meta.setAttribute("content", dark ? "#141210" : "#f7f2ea");
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
+    <noscript>Peakwise needs JavaScript to name a spectrum.</noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

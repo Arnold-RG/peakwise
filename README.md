@@ -2,9 +2,11 @@
 
 **Name the molecule in your mass spectrum.**
 
+Live site: [https://arnold-rg.github.io/peakwise/](https://arnold-rg.github.io/peakwise/)
+
 A mass spectrometer can see thousands of compounds in a drop of blood. It does not tell you their names. Peakwise is a small, readable tool that takes an LC-MS/MS peak list and ranks chemical structures (SMILES) — for known drugs and metabolites, and for close cousins that might be new medicines or disease markers.
 
-The public site runs **in any modern browser**, including phones, and can be hosted on **GitHub Pages** with no Python server. The full local copy adds the trained fingerprint model.
+The public site runs **in any modern browser**, including phones. GitHub Pages publishes it from `master` (the workflow is `.github/workflows/pages.yml`). The full local copy adds the trained fingerprint model.
 
 ![Peakwise](frontend/public/logo.png)
 

@@ -15,8 +15,7 @@ export function SimulatePage() {
     setLoading(true);
     setError(null);
     try {
-      const data = await simulateMolecule({ smiles, adduct, collision_energy: Number(energy) });
-      setResult(data);
+      setResult(await simulateMolecule({ smiles, adduct, collision_energy: Number(energy) }));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Simulation failed");
     } finally {
@@ -26,39 +25,80 @@ export function SimulatePage() {
 
   const peaks = (result?.peaks as Array<{ mz: number; intensity: number }>) || [];
   const isotopes = (result?.isotope_pattern as Array<{ mz: number; intensity: number }>) || [];
+  const precursor = result?.precursor_mz == null ? undefined : Number(result.precursor_mz);
+  const note = result?.note ? String(result.note) : "";
 
   return (
-    <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-      <section className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#0c0c0f] p-5 space-y-3">
-        <h2 className="font-serif text-2xl">Turn a structure into a spectrum</h2>
-        <p className="text-sm text-zinc-500">MassSpecGym challenge 3: molecular graph → MS/MS peaks via CID neutral losses and diagnostic ions.</p>
-        <label className="block text-xs font-medium text-zinc-500 mb-1.5">SMILES</label>
-        <textarea className="w-full h-28 font-mono text-sm bg-white dark:bg-[#09090b] border border-zinc-200 dark:border-zinc-800 rounded-[8px] px-3 py-2" value={smiles} onChange={(e) => setSmiles(e.target.value)} />
-        <div className="grid grid-cols-2 gap-3">
-          <select className="bg-white dark:bg-[#09090b] border border-zinc-200 dark:border-zinc-800 rounded-[8px] px-3 py-2 text-sm" value={adduct} onChange={(e) => setAdduct(e.target.value)}>
-            {["[M+H]+", "[M+Na]+", "[M-H]-"].map((item) => <option key={item}>{item}</option>)}
-          </select>
-          <input className="bg-white dark:bg-[#09090b] border border-zinc-200 dark:border-zinc-800 rounded-[8px] px-3 py-2 text-sm font-mono" value={energy} onChange={(e) => setEnergy(e.target.value)} />
-        </div>
-        <button onClick={run} disabled={loading} className="w-full btn-primary">
-          {loading ? "Working…" : "Draw a spectrum from this structure"}
-        </button>
-        {error ? <div className="rounded-lg border border-rose-200 dark:border-rose-800/30 bg-rose-50 dark:bg-rose-900/20 text-rose-800 dark:text-rose-300 p-3 text-sm">{error}</div> : null}
-      </section>
-      <section className="xl:col-span-2 space-y-4">
-        <SpectrumPlot peaks={peaks} precursorMz={result ? Number(result.precursor_mz) : undefined} />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#0c0c0f] p-5">
-            <div className="text-sm text-zinc-500">Predicted structure</div>
-            <MoleculeSvg svg={result?.svg as string} className="h-48 mt-2" />
-            <div className="mt-2 text-sm font-mono">{result ? String(result.formula) : "—"} · {result ? Number(result.precursor_mz).toFixed(4) : ""}</div>
+    <div className="stack-lg">
+      <header>
+        <p className="kicker">From a structure</p>
+        <h1 style={{ marginTop: "0.55rem" }}>Turn a structure into a spectrum</h1>
+        <p className="lede" style={{ marginTop: "0.8rem" }}>
+          MassSpecGym challenge 3, in miniature: a molecular graph becomes MS/MS peaks through neutral losses and diagnostic ions.
+        </p>
+      </header>
+
+      <div className="split">
+        <form
+          className="plate stack"
+          onSubmit={(event) => {
+            event.preventDefault();
+            void run();
+          }}
+        >
+          <div>
+            <label className="lbl" htmlFor="sim-smiles">
+              SMILES
+            </label>
+            <textarea id="sim-smiles" className="field" style={{ minHeight: "8rem" }} spellCheck={false} autoCapitalize="off" value={smiles} onChange={(event) => setSmiles(event.target.value)} />
           </div>
-          <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#0c0c0f] p-5">
-            <div className="text-sm text-zinc-500 mb-2">MS1 isotope envelope</div>
-            <SpectrumPlot peaks={isotopes} height={180} />
+          <div className="form-grid">
+            <div>
+              <label className="lbl" htmlFor="sim-adduct">
+                Adduct
+              </label>
+              <select id="sim-adduct" className="field" value={adduct} onChange={(event) => setAdduct(event.target.value)}>
+                {["[M+H]+", "[M+Na]+", "[M-H]-"].map((item) => (
+                  <option key={item}>{item}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="lbl" htmlFor="sim-energy">
+                Collision energy (eV)
+              </label>
+              <input id="sim-energy" className="field" inputMode="decimal" value={energy} onChange={(event) => setEnergy(event.target.value)} />
+            </div>
+          </div>
+          <button type="submit" className="btn-primary" disabled={loading || !smiles.trim()}>
+            {loading ? "Drawing…" : "Draw a spectrum from this structure"}
+          </button>
+          {error ? (
+            <p className="alert" role="alert">
+              {error}
+            </p>
+          ) : null}
+          {note ? <p className="hint">{note}</p> : null}
+        </form>
+
+        <div className="stack">
+          <SpectrumPlot peaks={peaks} precursorMz={Number.isFinite(precursor) ? precursor : undefined} />
+          <div className="pair">
+            <section className="plate stack">
+              <h2>Predicted structure</h2>
+              <MoleculeSvg svg={result?.svg as string} smiles={result ? String(result.smiles || smiles) : smiles} label="Predicted structure" />
+              <p className="mono">
+                {result?.formula ? String(result.formula) : "—"}
+                {precursor != null && Number.isFinite(precursor) ? ` · ${precursor.toFixed(4)}` : ""}
+              </p>
+            </section>
+            <section className="plate stack">
+              <h2>MS1 isotope envelope</h2>
+              <SpectrumPlot peaks={isotopes} height={180} />
+            </section>
           </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 }
