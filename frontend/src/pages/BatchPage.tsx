@@ -23,7 +23,13 @@ COLLISION_ENERGY=20
 END IONS
 `;
 
-export function BatchPage() {
+function csvCell(value: unknown) {
+  const text = value == null ? "" : String(value);
+  if (/[",\n]/.test(text)) return `"${text.replace(/"/g, '""')}"`;
+  return text;
+}
+
+export function BatchPage({ demo = false }: { demo?: boolean }) {
   const [file, setFile] = useState<File | null>(null);
   const [result, setResult] = useState<Record<string, unknown> | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -31,6 +37,10 @@ export function BatchPage() {
 
   async function run() {
     if (!file) return;
+    if (demo) {
+      setError("Naming a whole file needs the local Peakwise API. On the public site, use Identify for one spectrum.");
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
@@ -43,60 +53,103 @@ export function BatchPage() {
   }
 
   function useSample() {
-    const blob = new File([SAMPLE_MGF], "demo.mgf", { type: "text/plain" });
-    setFile(blob);
+    setFile(new File([SAMPLE_MGF], "demo.mgf", { type: "text/plain" }));
+    setError(null);
   }
 
   const rows = (result?.results as Array<Record<string, unknown>>) || [];
 
   function exportCsv() {
-    const header = "name,predicted_name,predicted_smiles,formula,confidence\n";
-    const body = rows.map((r) => [r.name, r.predicted_name, r.predicted_smiles, r.best_formula, r.confidence].join(",")).join("\n");
-    const url = URL.createObjectURL(new Blob([header + body], { type: "text/csv" }));
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "peakwise-batch.csv";
-    a.click();
+    const header = ["name", "predicted_name", "predicted_smiles", "formula", "confidence"];
+    const body = rows.map((row) => [row.name, row.predicted_name, row.predicted_smiles, row.best_formula, row.confidence].map(csvCell).join(","));
+    const blob = new Blob([[header.join(","), ...body].join("\n")], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "peakwise-batch.csv";
+    link.click();
+    URL.revokeObjectURL(url);
   }
 
   return (
-    <div className="space-y-6">
-      <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#0c0c0f] p-5">
-        <h2 className="font-serif text-2xl">Name many spectra at once</h2>
-        <p className="text-sm text-zinc-500 mt-1">Upload MGF, MSP, JSON, or a peak-list text file. Up to 40 spectra per request.</p>
-        <div className="mt-4 flex flex-wrap gap-3">
-          <input type="file" onChange={(e) => setFile(e.target.files?.[0] ?? null)} className="text-sm" />
-          <button onClick={useSample} className="bg-white dark:bg-[#262626] border border-zinc-200 dark:border-zinc-700 rounded-[8px] px-4 py-2 text-sm">Use sample MGF</button>
-          <button onClick={run} disabled={!file || loading} className="btn-primary">{loading ? "Working…" : "Name the file"}</button>
-          {rows.length ? <button onClick={exportCsv} className="bg-white dark:bg-[#262626] border border-zinc-200 dark:border-zinc-700 rounded-[8px] px-4 py-2 text-sm">Export CSV</button> : null}
+    <div className="stack-lg">
+      <header>
+        <p className="kicker">Many spectra</p>
+        <h1 style={{ marginTop: "0.55rem" }}>Name a file of spectra</h1>
+        <p className="lede" style={{ marginTop: "0.8rem" }}>
+          Upload MGF, MSP, JSON, or a peak-list text file. Up to 40 spectra per request. The public site names one spectrum at a time; a whole file needs the local API.
+        </p>
+      </header>
+
+      <form
+        className="plate stack"
+        onSubmit={(event) => {
+          event.preventDefault();
+          void run();
+        }}
+      >
+        <div className="actions" style={{ marginTop: 0 }}>
+          <label className="btn-ghost file">
+            Choose a file
+            <input
+              type="file"
+              accept=".mgf,.msp,.json,.txt,text/plain,application/json"
+              onChange={(event) => setFile(event.target.files?.[0] ?? null)}
+            />
+          </label>
+          <button type="button" className="btn-ghost" onClick={useSample}>
+            Use sample MGF
+          </button>
+          <button type="submit" className="btn-primary" disabled={!file || loading}>
+            {loading ? "Naming…" : "Name the file"}
+          </button>
+          {rows.length ? (
+            <button type="button" className="btn-ghost" onClick={exportCsv}>
+              Export CSV
+            </button>
+          ) : null}
         </div>
-        {file ? <div className="mt-2 text-xs text-zinc-500 font-mono">{file.name} · {(file.size / 1024).toFixed(1)} KB</div> : null}
-        {error ? <div className="mt-3 rounded-lg border border-rose-200 bg-rose-50 dark:bg-rose-900/20 dark:border-rose-800/30 text-rose-800 dark:text-rose-300 p-3 text-sm">{error}</div> : null}
-      </div>
-      <div className="rounded-[12px] border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="sticky top-0 bg-zinc-100 dark:bg-zinc-900 z-10 text-zinc-500">
+        {file ? (
+          <p className="mono hint">
+            {file.name} · {(file.size / 1024).toFixed(1)} KB
+          </p>
+        ) : (
+          <p className="hint">The sample file holds caffeine and ibuprofen, so you can see the shape of an MGF before you upload your own.</p>
+        )}
+        {error ? (
+          <p className="alert" role="alert">
+            {error}
+          </p>
+        ) : null}
+      </form>
+
+      <div className="table-wrap" tabIndex={0}>
+        <table className="ledger">
+          <caption>Named spectra</caption>
+          <thead>
             <tr>
-              <th className="text-left px-4 py-2">Query</th>
-              <th className="text-left px-4 py-2">Predicted</th>
-              <th className="text-left px-4 py-2">SMILES</th>
-              <th className="text-left px-4 py-2">Formula</th>
-              <th className="text-left px-4 py-2">Confidence</th>
+              <th scope="col">Query</th>
+              <th scope="col">Predicted</th>
+              <th scope="col">SMILES</th>
+              <th scope="col">Formula</th>
+              <th scope="col">Confidence</th>
             </tr>
           </thead>
           <tbody>
-            {rows.map((row, idx) => (
-              <tr key={idx} className="border-b border-zinc-100 dark:border-zinc-800">
-                <td className="px-4 py-3">{String(row.name)}</td>
-                <td className="px-4 py-3">{String(row.predicted_name || row.error || "—")}</td>
-                <td className="px-4 py-3 font-mono text-xs truncate max-w-xs">{String(row.predicted_smiles || "")}</td>
-                <td className="px-4 py-3 font-mono">{String(row.best_formula || "")}</td>
-                <td className="px-4 py-3 font-mono">{row.confidence != null ? Number(row.confidence).toFixed(2) : ""}</td>
+            {rows.map((row, index) => (
+              <tr key={`${String(row.name)}-${index}`}>
+                <td>{String(row.name)}</td>
+                <td>{String(row.predicted_name || row.error || "—")}</td>
+                <td className="mono break-all" style={{ fontSize: "0.78rem", maxWidth: "18rem" }}>
+                  {String(row.predicted_smiles || "")}
+                </td>
+                <td className="mono">{String(row.best_formula || "")}</td>
+                <td className="mono">{row.confidence != null ? Number(row.confidence).toFixed(2) : ""}</td>
               </tr>
             ))}
           </tbody>
         </table>
-        {!rows.length ? <div className="p-8 text-sm text-zinc-500">No batch results yet.</div> : null}
+        {!rows.length ? <p style={{ padding: "1.2rem 0.9rem" }} className="quiet">No file has been named yet.</p> : null}
       </div>
     </div>
   );

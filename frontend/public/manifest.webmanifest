@@ -1,13 +1,13 @@
 {
   "name": "Peakwise",
   "short_name": "Peakwise",
-  "description": "Name the molecule in your mass spectrum. LC-MS/MS peaks to SMILES.",
+  "description": "Name the molecule in your mass spectrum. LC-MS/MS peaks to a chemical structure.",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#F4EFE4",
-  "theme_color": "#F4EFE4",
+  "background_color": "#f7f2ea",
+  "theme_color": "#f7f2ea",
   "icons": [
-    { "src": "logo.png", "sizes": "512x512", "type": "image/png" },
-    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+    { "src": "logo.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
   ]
 }
