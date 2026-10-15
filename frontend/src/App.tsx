@@ -29,7 +29,7 @@ function storedLight(): boolean {
   } catch {
     /* storage can be blocked */
   }
-  return window.matchMedia("(prefers-color-scheme: light)").matches;
+  return true;
 }
 
 export default function App() {
@@ -51,7 +51,7 @@ export default function App() {
     document.documentElement.classList.toggle("light", light);
     document.documentElement.classList.toggle("dark", !light);
     document.documentElement.style.colorScheme = light ? "light" : "dark";
-    document.getElementById("theme-color")?.setAttribute("content", light ? "#eef3f9" : "#0f172a");
+    document.getElementById("theme-color")?.setAttribute("content", light ? "#F8FAFC" : "#111827");
     if (!themeChosen) return;
     try {
       localStorage.setItem("peakwise-theme", light ? "light" : "dark");

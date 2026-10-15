@@ -341,7 +341,7 @@ export function WorkbenchPage() {
                     <button
                       key={candidate.smiles}
                       type="button"
-                      className={`card result-card ${on ? "is-on" : ""}`}
+                      className={`card result-card score-reveal ${on ? "is-on" : ""}`}
                       onClick={() => {
                         setSelected(candidate);
                         setCopied("");

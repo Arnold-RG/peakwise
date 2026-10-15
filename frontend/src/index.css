@@ -2,48 +2,83 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Lab white #F8FAFC + spectrum cyan #06B6D4 + molecule violet #5B21B6 */
 :root {
-  --desk: #0b1220;
-  --paper: #0f172a;
-  --sheet: #151f33;
-  --ink: #e8eef7;
-  --muted: #8b9bb4;
-  --rule: #243044;
-  --teal: #2ee6d6;
-  --teal-deep: #14b8a6;
-  --teal-glow: rgba(46, 230, 214, 0.22);
-  --teal-line: rgba(46, 230, 214, 0.45);
-  --slate-soft: #1a2438;
+  --desk: #e2e8f0;
+  --paper: #f8fafc;
+  --sheet: #ffffff;
+  --ink: #0f172a;
+  --muted: #64748b;
+  --rule: #d0d9e6;
+  --teal: #06b6d4;
+  --teal-deep: #0891b2;
+  --teal-glow: rgba(6, 182, 212, 0.14);
+  --teal-line: rgba(6, 182, 212, 0.45);
+  --violet: #5b21b6;
+  --violet-glow: rgba(91, 33, 182, 0.14);
+  --violet-line: rgba(91, 33, 182, 0.4);
+  --slate-soft: #eef2f7;
+  --danger: #b42318;
+  --danger-soft: #fce8e6;
+  --ok-soft: #e0f7fa;
+  --warn-soft: #f3e8ff;
+  --header-h: 4.5rem;
+  --plot: #0f172a;
+  --plot-b: #06b6d4;
+  --plot-c: #5b21b6;
+  --focus: var(--violet);
+  color-scheme: light;
+}
+
+html:not(.light) {
+  --desk: #0b1020;
+  --paper: #111827;
+  --sheet: #1a2234;
+  --ink: #f1f5f9;
+  --muted: #94a3b8;
+  --rule: #2a3548;
+  --teal: #22d3ee;
+  --teal-deep: #06b6d4;
+  --teal-glow: rgba(34, 211, 238, 0.18);
+  --teal-line: rgba(34, 211, 238, 0.42);
+  --violet: #a78bfa;
+  --violet-glow: rgba(167, 139, 250, 0.16);
+  --violet-line: rgba(167, 139, 250, 0.4);
+  --slate-soft: #1e293b;
   --danger: #f07178;
   --danger-soft: #2a1a1e;
-  --ok-soft: #132820;
-  --warn-soft: #2a2414;
-  --header-h: 4.5rem;
-  --plot: #e8eef7;
-  --plot-b: #2ee6d6;
+  --ok-soft: #0f2a2e;
+  --warn-soft: #241a36;
+  --plot: #e2e8f0;
+  --plot-b: #22d3ee;
+  --plot-c: #a78bfa;
   --focus: var(--teal);
   color-scheme: dark;
 }
 
 html.light {
-  --desk: #d7e0ec;
-  --paper: #eef3f9;
-  --sheet: #f7fafc;
+  --desk: #e2e8f0;
+  --paper: #f8fafc;
+  --sheet: #ffffff;
   --ink: #0f172a;
-  --muted: #5b6b82;
-  --rule: #c9d5e6;
-  --teal: #0d9488;
-  --teal-deep: #0f766e;
-  --teal-glow: rgba(13, 148, 136, 0.14);
-  --teal-line: rgba(13, 148, 136, 0.4);
-  --slate-soft: #e4ebf5;
+  --muted: #64748b;
+  --rule: #d0d9e6;
+  --teal: #06b6d4;
+  --teal-deep: #0891b2;
+  --teal-glow: rgba(6, 182, 212, 0.14);
+  --teal-line: rgba(6, 182, 212, 0.45);
+  --violet: #5b21b6;
+  --violet-glow: rgba(91, 33, 182, 0.14);
+  --violet-line: rgba(91, 33, 182, 0.4);
+  --slate-soft: #eef2f7;
   --danger: #b42318;
   --danger-soft: #fce8e6;
-  --ok-soft: #e6f6f1;
-  --warn-soft: #f7f0de;
+  --ok-soft: #e0f7fa;
+  --warn-soft: #f3e8ff;
   --plot: #0f172a;
-  --plot-b: #0d9488;
-  --focus: var(--teal-deep);
+  --plot-b: #06b6d4;
+  --plot-c: #5b21b6;
+  --focus: var(--violet);
   color-scheme: light;
 }
 
@@ -135,8 +170,8 @@ textarea {
   left: 1rem;
   top: -4rem;
   z-index: 80;
-  background: var(--teal-deep);
-  color: #041016;
+  background: var(--violet);
+  color: #f8fafc;
   padding: 0.6rem 0.9rem;
   font-weight: 600;
 }
@@ -150,8 +185,8 @@ textarea {
   background-color: var(--paper);
   background-image:
     radial-gradient(ellipse 80% 50% at 10% -10%, var(--teal-glow), transparent 55%),
-    radial-gradient(ellipse 60% 40% at 100% 0%, rgba(56, 120, 200, 0.12), transparent 50%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    radial-gradient(ellipse 60% 40% at 100% 0%, var(--violet-glow), transparent 50%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
   background-size: auto, auto, 160px 160px;
 }
 
@@ -159,15 +194,15 @@ textarea {
   body {
     background-color: var(--desk);
     background-image:
-      radial-gradient(ellipse at 20% -10%, rgba(46, 230, 214, 0.12), transparent 45%),
-      radial-gradient(ellipse at 100% 80%, rgba(30, 80, 160, 0.14), transparent 40%);
+      radial-gradient(ellipse at 20% -10%, rgba(6, 182, 212, 0.14), transparent 45%),
+      radial-gradient(ellipse at 100% 80%, rgba(91, 33, 182, 0.12), transparent 40%);
     padding: clamp(0.85rem, 1.8vw, 2.1rem);
   }
 
-  html.light body {
+  html:not(.light) body {
     background-image:
-      radial-gradient(ellipse at 20% -10%, rgba(13, 148, 136, 0.1), transparent 45%),
-      radial-gradient(ellipse at 100% 80%, rgba(56, 100, 160, 0.08), transparent 40%);
+      radial-gradient(ellipse at 20% -10%, rgba(34, 211, 238, 0.12), transparent 45%),
+      radial-gradient(ellipse at 100% 80%, rgba(167, 139, 250, 0.1), transparent 40%);
   }
 
   .sheet {
@@ -546,7 +581,7 @@ main:focus-visible {
   font-weight: 800;
   letter-spacing: -0.04em;
   line-height: 0.95;
-  background: linear-gradient(120deg, var(--ink) 40%, var(--teal));
+  background: linear-gradient(120deg, var(--ink) 28%, var(--teal) 62%, var(--violet));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -676,9 +711,9 @@ main:focus-visible {
 }
 
 .btn-primary {
-  border: 1px solid var(--teal-deep);
-  background: linear-gradient(135deg, var(--teal), var(--teal-deep));
-  color: #041016;
+  border: 1px solid var(--violet);
+  background: linear-gradient(135deg, var(--teal), var(--violet));
+  color: #f8fafc;
 }
 
 .btn-primary:hover {
@@ -881,12 +916,17 @@ textarea.field {
 }
 
 .peak.is-hot {
-  stroke: var(--teal);
-  stroke-width: 2.4;
+  stroke: var(--violet);
+  stroke-width: 2.6;
+  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--violet) 55%, transparent));
 }
 
 .peak-b {
   stroke: var(--plot-b);
+}
+
+.peak.is-score {
+  stroke: var(--plot-c);
 }
 
 .axis-line {
@@ -905,7 +945,15 @@ textarea.field {
 .peak-clip {
   transform-box: fill-box;
   transform-origin: center bottom;
-  animation: peak-rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: peak-rise 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.peak {
+  animation: peak-draw 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.peak.is-hot {
+  animation: peak-draw 0.7s cubic-bezier(0.22, 1, 0.36, 1) both, peak-glow 1.8s ease-in-out infinite;
 }
 
 @keyframes peak-rise {
@@ -915,6 +963,57 @@ textarea.field {
   to {
     transform: scaleY(1);
   }
+}
+
+@keyframes peak-draw {
+  from {
+    opacity: 0;
+    stroke-dasharray: 120;
+    stroke-dashoffset: 120;
+  }
+  to {
+    opacity: 1;
+    stroke-dasharray: 120;
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes peak-glow {
+  0%,
+  100% {
+    stroke-width: 2.4;
+  }
+  50% {
+    stroke-width: 3.2;
+  }
+}
+
+@keyframes score-pop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.score-reveal {
+  animation: score-pop 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.score-reveal:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.score-reveal:nth-child(2) {
+  animation-delay: 0.12s;
+}
+.score-reveal:nth-child(3) {
+  animation-delay: 0.18s;
+}
+.score-reveal:nth-child(4) {
+  animation-delay: 0.24s;
 }
 
 .plot-axis,
@@ -979,9 +1078,9 @@ textarea.field {
 .meter > span {
   display: block;
   height: 100%;
-  background: linear-gradient(90deg, var(--teal-deep), var(--teal));
+  background: linear-gradient(90deg, var(--violet), var(--teal));
   transform-origin: left center;
-  animation: meter-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: meter-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @keyframes meter-in {
