@@ -5,9 +5,19 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        serif: ['Fraunces', "Iowan Old Style", "Palatino", "Georgia", "serif"],
-        sans: ['Outfit', "Avenir Next", "Segoe UI", "sans-serif"],
-        mono: ['"IBM Plex Mono"', "ui-monospace", "monospace"],
+        display: ["Syne", "Avenir Next Condensed", "Segoe UI", "sans-serif"],
+        sans: ["Sora", "Avenir Next", "Segoe UI", "sans-serif"],
+        mono: ['"JetBrains Mono"', '"IBM Plex Mono"', "ui-monospace", "monospace"],
+      },
+      colors: {
+        slateink: {
+          DEFAULT: "#0f172a",
+          soft: "#151f33",
+        },
+        teal: {
+          electric: "#2ee6d6",
+          deep: "#14b8a6",
+        },
       },
     },
   },

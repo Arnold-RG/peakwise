@@ -21,20 +21,20 @@ function pageFromHash(): PageId {
   return match ? match.id : "overview";
 }
 
-function storedTheme(): boolean {
+function storedLight(): boolean {
   try {
     const stored = localStorage.getItem("peakwise-theme");
-    if (stored === "dark") return true;
-    if (stored === "light") return false;
+    if (stored === "light") return true;
+    if (stored === "dark") return false;
   } catch {
     /* storage can be blocked */
   }
-  return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  return window.matchMedia("(prefers-color-scheme: light)").matches;
 }
 
 export default function App() {
   const [page, setPage] = useState<PageId>(pageFromHash);
-  const [dark, setDark] = useState(storedTheme);
+  const [light, setLight] = useState(storedLight);
   const [themeChosen, setThemeChosen] = useState(() => {
     try {
       const stored = localStorage.getItem("peakwise-theme");
@@ -48,21 +48,22 @@ export default function App() {
   const [healthKnown, setHealthKnown] = useState(false);
 
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", dark);
-    document.documentElement.style.colorScheme = dark ? "dark" : "light";
-    document.getElementById("theme-color")?.setAttribute("content", dark ? "#141210" : "#f7f2ea");
+    document.documentElement.classList.toggle("light", light);
+    document.documentElement.classList.toggle("dark", !light);
+    document.documentElement.style.colorScheme = light ? "light" : "dark";
+    document.getElementById("theme-color")?.setAttribute("content", light ? "#eef3f9" : "#0f172a");
     if (!themeChosen) return;
     try {
-      localStorage.setItem("peakwise-theme", dark ? "dark" : "light");
+      localStorage.setItem("peakwise-theme", light ? "light" : "dark");
     } catch {
       /* ignore */
     }
-  }, [dark, themeChosen]);
+  }, [light, themeChosen]);
 
   useEffect(() => {
     if (themeChosen) return;
-    const media = window.matchMedia("(prefers-color-scheme: dark)");
-    const onChange = () => setDark(media.matches);
+    const media = window.matchMedia("(prefers-color-scheme: light)");
+    const onChange = () => setLight(media.matches);
     media.addEventListener("change", onChange);
     return () => media.removeEventListener("change", onChange);
   }, [themeChosen]);
@@ -124,13 +125,13 @@ export default function App() {
               type="button"
               className="btn-ghost"
               style={{ minHeight: "2.5rem", paddingInline: "0.85rem" }}
-              aria-pressed={dark}
+              aria-pressed={!light}
               onClick={() => {
                 setThemeChosen(true);
-                setDark((value) => !value);
+                setLight((value) => !value);
               }}
             >
-              {dark ? "Light" : "Dark"}
+              {light ? "Dark" : "Light"}
             </button>
             <button
               type="button"
@@ -183,9 +184,11 @@ export default function App() {
           </main>
           <footer className="footer">
             <div className="footer-inner">
-              <p>Peakwise is a small lab tool: peaks in, a named molecule out. Not a medical device. Treat every name as a hypothesis.</p>
+              <p>Peakwise is a lab instrument for naming spectra: peaks in, ranked SMILES out. Not a medical device. Treat every name as a hypothesis.</p>
               <p>
-                <a href="https://github.com/Arnold-RG/peakwise">Source on GitHub</a>
+                <a href="https://github.com/Arnold-RG/peakwise" target="_blank" rel="noopener noreferrer">
+                  Source on GitHub
+                </a>
               </p>
             </div>
           </footer>

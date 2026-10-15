@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 
 export function useDark() {
-  const [dark, setDark] = useState(() => document.documentElement.classList.contains("dark"));
+  const [dark, setDark] = useState(() => !document.documentElement.classList.contains("light"));
 
   useEffect(() => {
     const list = document.documentElement.classList;
-    const sync = () => setDark(list.contains("dark"));
+    const sync = () => setDark(!list.contains("light"));
     const observer = new MutationObserver(sync);
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
     return () => observer.disconnect();

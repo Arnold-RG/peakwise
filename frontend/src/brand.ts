@@ -1,7 +1,7 @@
 export const BRAND = {
   name: "Peakwise",
-  tagline: "Name the molecule in your mass spectrum",
-  sentence: "You paste LC-MS/MS peaks. Peakwise suggests the chemical structure behind them.",
+  tagline: "LC-MS/MS peaks → ranked SMILES",
+  sentence: "You paste LC-MS/MS peaks. Peakwise ranks chemical structures and reports confidence.",
   url: "https://arnold-rg.github.io/peakwise/",
 };
 

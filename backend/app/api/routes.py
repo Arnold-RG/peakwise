@@ -305,10 +305,33 @@ def quality(query: SpectrumQuery) -> dict:
     return assess_spectrum(peaks, query.precursor_mz)
 
 
+MAX_UPLOAD_BYTES = 2 * 1024 * 1024
+ALLOWED_UPLOAD_EXT = {".mgf", ".msp", ".json", ".txt"}
+
+
 @router.post("/batch")
 async def batch(file: UploadFile = File(...)) -> dict:
-    text = (await file.read()).decode("utf-8", errors="replace")
-    spectra = parse_any(file.filename or "query.mgf", text)
+    filename = (file.filename or "query.mgf").replace("\\", "/").split("/")[-1]
+    if ".." in filename or not filename:
+        raise HTTPException(400, "Invalid filename")
+    lower = filename.lower()
+    if not any(lower.endswith(ext) for ext in ALLOWED_UPLOAD_EXT):
+        raise HTTPException(400, "Allowed upload types: .mgf, .msp, .json, .txt")
+    raw = await file.read(MAX_UPLOAD_BYTES + 1)
+    if len(raw) > MAX_UPLOAD_BYTES:
+        raise HTTPException(413, f"Upload exceeds {MAX_UPLOAD_BYTES // (1024 * 1024)} MB limit")
+    if not raw:
+        raise HTTPException(400, "Empty upload")
+    try:
+        text = raw.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise HTTPException(400, "Upload must be UTF-8 text") from exc
+    try:
+        spectra = parse_any(filename, text)
+    except Exception as exc:
+        raise HTTPException(400, f"Could not parse spectrum file: {exc}") from exc
+    if not spectra:
+        raise HTTPException(400, "No spectra found in upload")
     predictor = get_predictor()
     outputs = []
     for spec in spectra[:40]:

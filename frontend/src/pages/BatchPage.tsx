@@ -23,10 +23,23 @@ COLLISION_ENERGY=20
 END IONS
 `;
 
+const MAX_UPLOAD_BYTES = 2 * 1024 * 1024;
+const ALLOWED_EXT = new Set([".mgf", ".msp", ".json", ".txt"]);
+
 function csvCell(value: unknown) {
   const text = value == null ? "" : String(value);
   if (/[",\n]/.test(text)) return `"${text.replace(/"/g, '""')}"`;
   return text;
+}
+
+function validateUpload(file: File): string | null {
+  if (file.size <= 0) return "File is empty.";
+  if (file.size > MAX_UPLOAD_BYTES) return `File exceeds ${MAX_UPLOAD_BYTES / 1024 / 1024} MB limit.`;
+  const name = file.name.toLowerCase();
+  const dot = name.lastIndexOf(".");
+  const ext = dot >= 0 ? name.slice(dot) : "";
+  if (!ALLOWED_EXT.has(ext)) return "Allowed types: .mgf, .msp, .json, .txt.";
+  return null;
 }
 
 export function BatchPage({ demo = false }: { demo?: boolean }) {
@@ -37,6 +50,11 @@ export function BatchPage({ demo = false }: { demo?: boolean }) {
 
   async function run() {
     if (!file) return;
+    const problem = validateUpload(file);
+    if (problem) {
+      setError(problem);
+      return;
+    }
     if (demo) {
       setError("Naming a whole file needs the local Peakwise API. On the public site, use Identify for one spectrum.");
       return;
@@ -77,7 +95,7 @@ export function BatchPage({ demo = false }: { demo?: boolean }) {
         <p className="kicker">Many spectra</p>
         <h1 style={{ marginTop: "0.55rem" }}>Name a file of spectra</h1>
         <p className="lede" style={{ marginTop: "0.8rem" }}>
-          Upload MGF, MSP, JSON, or a peak-list text file. Up to 40 spectra per request. The public site names one spectrum at a time; a whole file needs the local API.
+          Upload MGF, MSP, JSON, or a peak-list text file (max 2 MB, up to 40 spectra). The public site names one spectrum at a time; a whole file needs the local API.
         </p>
       </header>
 
@@ -94,7 +112,11 @@ export function BatchPage({ demo = false }: { demo?: boolean }) {
             <input
               type="file"
               accept=".mgf,.msp,.json,.txt,text/plain,application/json"
-              onChange={(event) => setFile(event.target.files?.[0] ?? null)}
+              onChange={(event) => {
+                const next = event.target.files?.[0] ?? null;
+                setFile(next);
+                setError(next ? validateUpload(next) : null);
+              }}
             />
           </label>
           <button type="button" className="btn-ghost" onClick={useSample}>

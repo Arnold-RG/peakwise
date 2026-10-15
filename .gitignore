@@ -11,6 +11,12 @@ node_modules/
 frontend/dist/
 .DS_Store
 .env
+.env.*
+!.env.example
+*.pem
+*.key
+*credentials*
+secrets/
 *.log
 .ipynb_checkpoints/
 backend/app/data/library.json

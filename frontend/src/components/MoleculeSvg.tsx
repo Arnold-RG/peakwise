@@ -10,14 +10,72 @@ type DrawerModule = {
   };
 };
 
+const SVG_ALLOWED = new Set([
+  "svg",
+  "g",
+  "path",
+  "circle",
+  "ellipse",
+  "line",
+  "polyline",
+  "polygon",
+  "rect",
+  "text",
+  "tspan",
+  "defs",
+  "clippath",
+  "title",
+  "desc",
+  "use",
+]);
+
+const ATTR_BLOCK = /^(on|xmlns:xlink$)/i;
+
+/** Strip scripts/handlers from server SVG before any DOM insert. */
+export function sanitizeSvgMarkup(raw: string): string | null {
+  if (!raw || !raw.includes("<")) return null;
+  try {
+    const parsed = new DOMParser().parseFromString(raw, "image/svg+xml");
+    if (parsed.querySelector("parsererror")) return null;
+    const root = parsed.documentElement;
+    if (!root || root.nodeName.toLowerCase() !== "svg") return null;
+
+    const walk = (el: Element) => {
+      const tag = el.tagName.toLowerCase();
+      if (!SVG_ALLOWED.has(tag) || tag === "foreignobject" || tag === "script") {
+        el.remove();
+        return;
+      }
+      for (const attr of [...el.attributes]) {
+        const name = attr.name.toLowerCase();
+        const value = attr.value;
+        if (ATTR_BLOCK.test(name) || name.startsWith("on")) {
+          el.removeAttribute(attr.name);
+          continue;
+        }
+        if ((name === "href" || name === "xlink:href") && /^\s*javascript:/i.test(value)) {
+          el.removeAttribute(attr.name);
+        }
+      }
+      for (const child of [...el.children]) walk(child);
+    };
+
+    walk(root);
+    root.setAttribute("class", "mol-svg");
+    return new XMLSerializer().serializeToString(root);
+  } catch {
+    return null;
+  }
+}
+
 function palette() {
   const style = getComputedStyle(document.documentElement);
   const pick = (name: string) => style.getPropertyValue(name).trim();
-  const ink = pick("--ink") || "#1a1410";
-  const sheet = pick("--sheet") || "#fbf8f3";
-  const oxygen = pick("--garnet") || "#7a2e38";
-  const nitrogen = pick("--forest") || "#1e4a38";
-  const gold = pick("--gold") || "#8c7349";
+  const ink = pick("--ink") || "#e8eef7";
+  const sheet = pick("--sheet") || "#151f33";
+  const oxygen = pick("--teal") || "#2ee6d6";
+  const nitrogen = pick("--teal-deep") || "#14b8a6";
+  const muted = pick("--muted") || "#8b9bb4";
   const base = {
     FOREGROUND: ink,
     BACKGROUND: sheet,
@@ -27,12 +85,12 @@ function palette() {
     F: nitrogen,
     CL: nitrogen,
     BR: oxygen,
-    I: gold,
+    I: muted,
     P: oxygen,
-    S: gold,
+    S: muted,
     B: oxygen,
     SI: ink,
-    H: gold,
+    H: muted,
   };
   return { light: base, dark: base };
 }
@@ -56,7 +114,10 @@ export function MoleculeSvg({
   const reactId = useId();
   const [visible, setVisible] = useState(false);
   const [failed, setFailed] = useState(false);
-  const server = Boolean(svg) && (!dark || !smiles);
+  // Prefer client-side SMILES drawing when available (avoids injecting remote markup).
+  const useClient = Boolean(smiles);
+  const safeSvg = !useClient && svg ? sanitizeSvgMarkup(svg) : null;
+  const server = Boolean(safeSvg);
 
   useEffect(() => {
     setFailed(false);
@@ -125,15 +186,14 @@ export function MoleculeSvg({
 
   const hidden = decorative ? true : undefined;
 
-  if (server && svg) {
-    const html = svg.includes("<svg") ? svg.replace("<svg", '<svg class="mol-svg"') : svg;
+  if (server && safeSvg) {
     return (
       <div
         className={`mol mol-server ${dark ? "is-inverted" : ""} ${className}`}
         role={decorative ? undefined : "img"}
         aria-label={decorative ? undefined : label}
         aria-hidden={hidden}
-        dangerouslySetInnerHTML={{ __html: html }}
+        dangerouslySetInnerHTML={{ __html: safeSvg }}
       />
     );
   }

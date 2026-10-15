@@ -1,14 +1,19 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'"
+    />
     <title>Peakwise — name the molecule in your mass spectrum</title>
     <meta name="description" content="Peakwise turns an LC-MS/MS peak list into ranked chemical structures. It runs in the browser, including on a phone and on GitHub Pages." />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://arnold-rg.github.io/peakwise/" />
-    <meta name="theme-color" content="#f7f2ea" id="theme-color" />
-    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#0f172a" id="theme-color" />
+    <meta name="color-scheme" content="dark light" />
     <meta name="application-name" content="Peakwise" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Peakwise" />
@@ -19,18 +24,18 @@
     <meta property="og:image" content="https://arnold-rg.github.io/peakwise/og.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Peakwise. A mass spectrum drawn on warm paper, with one peak marked in garnet." />
+    <meta property="og:image:alt" content="Peakwise. Lab-instrument spectrum naming with cool slate and teal accents." />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Peakwise — name the molecule in your mass spectrum" />
     <meta name="twitter:description" content="Paste LC-MS/MS peaks. Peakwise suggests the chemical structure behind them." />
     <meta name="twitter:image" content="https://arnold-rg.github.io/peakwise/og.png" />
-    <meta name="twitter:image:alt" content="Peakwise. A mass spectrum drawn on warm paper, with one peak marked in garnet." />
+    <meta name="twitter:image:alt" content="Peakwise. Lab-instrument spectrum naming with cool slate and teal accents." />
     <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
     <link rel="apple-touch-icon" href="%BASE_URL%apple-touch-icon.png" />
     <link rel="manifest" href="%BASE_URL%manifest.webmanifest" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,620&family=IBM+Plex+Mono:wght@400;500&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Sora:wght@400;500;600&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -48,12 +53,13 @@
       (function () {
         try {
           var stored = localStorage.getItem("peakwise-theme");
-          var dark = stored === "dark" || (stored !== "light" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+          var light = stored === "light" || (stored !== "dark" && window.matchMedia("(prefers-color-scheme: light)").matches);
           var root = document.documentElement;
-          if (dark) root.classList.add("dark");
-          root.style.colorScheme = dark ? "dark" : "light";
+          root.classList.toggle("light", light);
+          root.classList.toggle("dark", !light);
+          root.style.colorScheme = light ? "light" : "dark";
           var meta = document.getElementById("theme-color");
-          if (meta) meta.setAttribute("content", dark ? "#141210" : "#f7f2ea");
+          if (meta) meta.setAttribute("content", light ? "#eef3f9" : "#0f172a");
         } catch (e) {}
       })();
     </script>
