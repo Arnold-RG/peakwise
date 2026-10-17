@@ -48,6 +48,8 @@ That commits and pushes to [Arnold-RG/peakwise](https://github.com/Arnold-RG/pea
 
 ## Run locally (full model)
 
+Use Python 3.12 (see `.python-version`). NumPy 1.26.4 does not publish wheels for Python 3.13.
+
 ```powershell
 cd C:\Users\ateck\ionscribe
 .\.venv\Scripts\python.exe scripts\build_library.py
