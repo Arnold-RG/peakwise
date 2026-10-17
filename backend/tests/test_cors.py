@@ -21,6 +21,17 @@ def test_cors_defaults_to_local_dev_origins(monkeypatch: pytest.MonkeyPatch):
         assert _allow_origin(client, "https://evil.example") is None
 
 
+def test_cors_origins_ignore_whitespace_and_trailing_slash(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setenv(
+        "PEAKWISE_CORS_ORIGINS",
+        " https://arnold-rg.github.io/ , http://127.0.0.1:5173/ ",
+    )
+    with TestClient(build_app()) as client:
+        assert _allow_origin(client, "https://arnold-rg.github.io") == "https://arnold-rg.github.io"
+        assert _allow_origin(client, "http://127.0.0.1:5173") == "http://127.0.0.1:5173"
+        assert _allow_origin(client, "https://arnold-rg.github.io/") is None
+
+
 def test_cors_origins_from_env(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setenv(
         "PEAKWISE_CORS_ORIGINS",

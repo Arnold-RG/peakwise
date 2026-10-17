@@ -17,7 +17,8 @@ LOCAL_CORS_ORIGINS = [
 
 def cors_origins() -> list[str]:
     raw = os.environ.get("PEAKWISE_CORS_ORIGINS", "")
-    origins = [part.strip() for part in raw.split(",") if part.strip()]
+    origins = [part.strip().rstrip("/") for part in raw.split(",")]
+    origins = [origin for origin in origins if origin]
     return origins or list(LOCAL_CORS_ORIGINS)
 
 
