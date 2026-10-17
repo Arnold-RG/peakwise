@@ -15,52 +15,45 @@ The public site runs **in any modern browser**, including phones. GitHub Pages p
 | Where | What you get |
 | --- | --- |
 | GitHub Pages | Identify tab with bundled examples, library browse, glossary, scores |
-| This laptop | Same UI plus the trained model, analog generator, batch MGF |
+| Local copy | Same UI plus the trained model, analog generator, batch MGF |
 
-Public URL after you push (repo name `peakwise`):
-
-`https://arnold-rg.github.io/peakwise/`
-
-### Put it on GitHub
-
-```powershell
-cd C:\Users\ateck\ionscribe
-git init
-git add .
-git commit -m "Peakwise: spectrum to molecule"
-gh repo create peakwise --public --source=. --remote=origin --push
-```
-
-Then: GitHub → **Settings → Pages → Build and deployment → GitHub Actions**.
-
-The workflow in `.github/workflows/pages.yml` builds the frontend and publishes it. The Identify tab works on Pages in **demo mode** (no install). Phones get a home-screen icon via `manifest.webmanifest`.
-
-## Keep GitHub updated
-
-After you change files, run:
-
-```powershell
-cd C:\Users\ateck\ionscribe
-.\scripts\sync-github.ps1
-```
-
-That commits and pushes to [Arnold-RG/peakwise](https://github.com/Arnold-RG/peakwise). GitHub Pages then rebuilds the public site. A local `post-commit` hook also pushes whenever you commit.
+The Pages site is demo mode (no install). Phones can use the home-screen icon from `manifest.webmanifest`.
 
 ## Run locally (full model)
 
+Use Python 3.12. NumPy 1.26.4 does not publish wheels for Python 3.13.
+
+```bash
+git clone https://github.com/Arnold-RG/peakwise.git
+cd peakwise
+python -m venv .venv
+```
+
+macOS and Linux:
+
+```bash
+.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python scripts/build_library.py
+.venv/bin/python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000
+```
+
+Windows:
+
 ```powershell
-cd C:\Users\ateck\ionscribe
-.\.venv\Scripts\python.exe scripts\build_library.py
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe scripts/build_library.py
 .\.venv\Scripts\python.exe -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000
 ```
 
-```powershell
-cd C:\Users\ateck\ionscribe\frontend
+In a second terminal, from `<your-folder>/peakwise`:
+
+```bash
+cd frontend
 npm install
 npm run dev
 ```
 
-Open [http://127.0.0.1:5173](http://127.0.0.1:5173).
+Open [http://127.0.0.1:5173](http://127.0.0.1:5173). The dev server proxies `/api` to the API on port 8000.
 
 ## How to identify a spectrum
 
