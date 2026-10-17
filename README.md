@@ -24,7 +24,7 @@ Public URL after you push (repo name `peakwise`):
 ### Put it on GitHub
 
 ```powershell
-cd C:\Users\ateck\ionscribe
+cd C:\path\to\peakwise
 git init
 git add .
 git commit -m "Peakwise: spectrum to molecule"
@@ -40,7 +40,7 @@ The workflow in `.github/workflows/pages.yml` builds the frontend and publishes 
 After you change files, run:
 
 ```powershell
-cd C:\Users\ateck\ionscribe
+cd C:\path\to\peakwise
 .\scripts\sync-github.ps1
 ```
 
@@ -49,13 +49,13 @@ That commits and pushes to [Arnold-RG/peakwise](https://github.com/Arnold-RG/pea
 ## Run locally (full model)
 
 ```powershell
-cd C:\Users\ateck\ionscribe
+cd C:\path\to\peakwise
 .\.venv\Scripts\python.exe scripts\build_library.py
 .\.venv\Scripts\python.exe -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000
 ```
 
 ```powershell
-cd C:\Users\ateck\ionscribe\frontend
+cd C:\path\to\peakwise\frontend
 npm install
 npm run dev
 ```
