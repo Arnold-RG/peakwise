@@ -2,97 +2,110 @@
 
 **Name the molecule in your mass spectrum.**
 
-Live site: [https://arnold-rg.github.io/peakwise/](https://arnold-rg.github.io/peakwise/)
+[![Live demo](https://img.shields.io/badge/Live_demo-GitHub_Pages-2ea44f?style=for-the-badge&logo=github)](https://arnold-rg.github.io/peakwise/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-A mass spectrometer can see thousands of compounds in a drop of blood. It does not tell you their names. Peakwise is a small, readable tool that takes an LC-MS/MS peak list and ranks chemical structures (SMILES) — for known drugs and metabolites, and for close cousins that might be new medicines or disease markers.
+**Live:** [https://arnold-rg.github.io/peakwise/](https://arnold-rg.github.io/peakwise/)
 
-The public site runs **in any modern browser**, including phones. GitHub Pages publishes it from `master` (the workflow is `.github/workflows/pages.yml`). The full local copy adds the trained fingerprint model.
+A mass spectrometer can see thousands of compounds in a drop of blood. It does not tell you their names. Peakwise takes an LC-MS/MS peak list and ranks chemical structures (SMILES) — for known drugs and metabolites, and for close cousins that might be new medicines or disease markers.
 
-![Peakwise](frontend/public/logo.png)
+The public site runs in any modern browser, including phones. GitHub Pages publishes it from `master`. The full local copy adds the trained fingerprint model.
 
-## Use it on any device
+[![Peakwise](docs/screenshot.jpg)](https://arnold-rg.github.io/peakwise/)
+
+## Features
+
+- Identify tab: paste `mass height` pairs, or use the bundled caffeine example
+- Ranked names with “why this ranking” notes and a mirror plot
+- Library search (cosine and modified cosine)
+- Formula guessing from precursor mass
+- Nearby-molecule edits for novel guesses (local API)
+- Batch MGF/MSP (local API)
+- Plain-English glossary
 
 | Where | What you get |
 | --- | --- |
-| GitHub Pages | Identify tab with bundled examples, library browse, glossary, scores |
-| This laptop | Same UI plus the trained model, analog generator, batch MGF |
+| GitHub Pages | Identify tab with bundled examples, library browse, glossary, scores (demo mode) |
+| Local copy | The same UI plus the trained fingerprint model, analog generator, and batch MGF |
 
-Public URL after you push (repo name `peakwise`):
+This is not a medical device. Treat every name as a hypothesis.
 
-`https://arnold-rg.github.io/peakwise/`
+## Tech stack
 
-### Put it on GitHub
+| Layer | Tools |
+| --- | --- |
+| Backend | Python, FastAPI, NumPy, pandas, scikit-learn, SciPy, RDKit |
+| Frontend | TypeScript, Vite, Tailwind CSS |
+| Hosting | GitHub Pages via `.github/workflows/pages.yml` |
+| License | MIT — see [LICENSE](LICENSE) |
 
-```powershell
-cd C:\Users\ateck\ionscribe
-git init
-git add .
-git commit -m "Peakwise: spectrum to molecule"
-gh repo create peakwise --public --source=. --remote=origin --push
+## Getting started
+
+```bash
+git clone https://github.com/Arnold-RG/peakwise.git
+cd peakwise
+python3 -m venv .venv
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+python scripts/build_library.py
+uvicorn backend.app.main:app --host 127.0.0.1 --port 8000
 ```
 
-Then: GitHub → **Settings → Pages → Build and deployment → GitHub Actions**.
+In another terminal:
 
-The workflow in `.github/workflows/pages.yml` builds the frontend and publishes it. The Identify tab works on Pages in **demo mode** (no install). Phones get a home-screen icon via `manifest.webmanifest`.
-
-## Keep GitHub updated
-
-After you change files, run:
-
-```powershell
-cd C:\Users\ateck\ionscribe
-.\scripts\sync-github.ps1
-```
-
-That commits and pushes to [Arnold-RG/peakwise](https://github.com/Arnold-RG/peakwise). GitHub Pages then rebuilds the public site. A local `post-commit` hook also pushes whenever you commit.
-
-## Run locally (full model)
-
-```powershell
-cd C:\Users\ateck\ionscribe
-.\.venv\Scripts\python.exe scripts\build_library.py
-.\.venv\Scripts\python.exe -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000
-```
-
-```powershell
-cd C:\Users\ateck\ionscribe\frontend
+```bash
+cd frontend
 npm install
 npm run dev
 ```
 
 Open [http://127.0.0.1:5173](http://127.0.0.1:5173).
 
-## How to identify a spectrum
+### How to identify a spectrum
 
 1. Open **Identify**.
 2. Leave the caffeine list, or paste `mass height` pairs (spaces or commas).
 3. Press **Name this spectrum**.
-4. Read the ranked names, the “why this ranking” notes, and the mirror plot.
+4. Read the ranked names, the ranking notes, and the mirror plot.
 
 If a word is unfamiliar, open **Plain English**.
 
-## What is inside
+## Project structure
 
-- Library search (cosine + modified cosine)
-- Fingerprint model (local)
-- Formula guessing from precursor mass
-- Nearby-molecule edits for novel guesses
-- Batch MGF/MSP (local API)
-- Held-out scaffold metrics
+```text
+backend/app/     Chemistry, spectra, model, and API
+frontend/         Peakwise UI (GitHub Pages build)
+scripts/          Library build and training
+notebooks/        Exploratory analysis
+models/           Trained model artefacts
+```
+
+## Tests
+
+```bash
+source .venv/bin/activate
+pytest -q
+```
+
+Configuration is in `pytest.ini`.
 
 ## Held-out numbers (bundled set)
+
+These figures come from the bundled evaluation set in this repository, not from a production deployment.
 
 | | Top-1 | Top-10 | Tanimoto@1 |
 |---|---|---|---|
 | Hybrid | 67% | 100% | 0.75 |
 | Cosine | 71% | 100% | 0.82 |
 
-## Layout
+## Publish
 
-```
-backend/app/     chemistry, spectra, model, API
-frontend/         Peakwise UI (GitHub Pages)
-scripts/          library build + training
-```
+The workflow in `.github/workflows/pages.yml` builds the frontend and publishes it to GitHub Pages. The Identify tab works on Pages in demo mode (no install). Phones can add a home-screen icon via `manifest.webmanifest`.
 
-Not a medical device. Treat every name as a hypothesis.
+## License
+
+MIT. See [LICENSE](LICENSE).
+
+## Author
+
+Arnold Rurangwa
