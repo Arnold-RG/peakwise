@@ -1,0 +1,127 @@
+[
+  {
+    "name": "Caffeine",
+    "smiles": "Cn1cnc2c1c(=O)n(C)c(=O)n2C",
+    "formula": "C8H10N4O2",
+    "role": "stimulant",
+    "molecule_class": "xanthine",
+    "precursor_mz": 195.0877,
+    "adduct": "[M+H]+",
+    "collision_energy": 20,
+    "peaks": [
+      {"mz": 195.0877, "intensity": 1.0},
+      {"mz": 138.0662, "intensity": 0.82},
+      {"mz": 110.0713, "intensity": 0.41},
+      {"mz": 83.0604, "intensity": 0.22}
+    ]
+  },
+  {
+    "name": "Aspirin",
+    "smiles": "CC(=O)Oc1ccccc1C(=O)O",
+    "formula": "C9H8O4",
+    "role": "drug",
+    "molecule_class": "NSAID",
+    "precursor_mz": 181.0495,
+    "adduct": "[M+H]+",
+    "collision_energy": 20,
+    "peaks": [
+      {"mz": 181.0495, "intensity": 0.7},
+      {"mz": 163.039, "intensity": 1.0},
+      {"mz": 121.0284, "intensity": 0.55},
+      {"mz": 93.0335, "intensity": 0.28}
+    ]
+  },
+  {
+    "name": "Ibuprofen",
+    "smiles": "CC(C)Cc1ccc(C(C)C(=O)O)cc1",
+    "formula": "C13H18O2",
+    "role": "drug",
+    "molecule_class": "NSAID",
+    "precursor_mz": 207.138,
+    "adduct": "[M+H]+",
+    "collision_energy": 20,
+    "peaks": [
+      {"mz": 207.138, "intensity": 1.0},
+      {"mz": 161.1325, "intensity": 0.9},
+      {"mz": 119.0855, "intensity": 0.55}
+    ]
+  },
+  {
+    "name": "Dopamine",
+    "smiles": "NCCc1ccc(O)c(O)c1",
+    "formula": "C8H11NO2",
+    "role": "biomarker",
+    "molecule_class": "neurotransmitter",
+    "precursor_mz": 154.0863,
+    "adduct": "[M+H]+",
+    "collision_energy": 20,
+    "peaks": [
+      {"mz": 154.0863, "intensity": 0.8},
+      {"mz": 137.0597, "intensity": 1.0},
+      {"mz": 119.0491, "intensity": 0.4},
+      {"mz": 91.0542, "intensity": 0.33}
+    ]
+  },
+  {
+    "name": "Glucose",
+    "smiles": "OC[C@H]1O[C@H](O)[C@H](O)[C@@H](O)[C@@H]1O",
+    "formula": "C6H12O6",
+    "role": "metabolite",
+    "molecule_class": "sugar",
+    "precursor_mz": 181.0707,
+    "adduct": "[M+H]+",
+    "collision_energy": 20,
+    "peaks": [
+      {"mz": 181.0707, "intensity": 0.45},
+      {"mz": 163.0601, "intensity": 1.0},
+      {"mz": 145.0495, "intensity": 0.62},
+      {"mz": 85.0284, "intensity": 0.3}
+    ]
+  },
+  {
+    "name": "Metformin",
+    "smiles": "CN(C)C(=N)NC(=N)N",
+    "formula": "C4H11N5",
+    "role": "drug",
+    "molecule_class": "biguanide",
+    "precursor_mz": 130.1087,
+    "adduct": "[M+H]+",
+    "collision_energy": 20,
+    "peaks": [
+      {"mz": 130.1087, "intensity": 1.0},
+      {"mz": 113.0822, "intensity": 0.48},
+      {"mz": 85.076, "intensity": 0.36},
+      {"mz": 71.0604, "intensity": 0.22}
+    ]
+  },
+  {
+    "name": "Serotonin",
+    "smiles": "NCCc1c[nH]c2ccc(O)cc12",
+    "formula": "C10H12N2O",
+    "role": "biomarker",
+    "molecule_class": "neurotransmitter",
+    "precursor_mz": 177.1022,
+    "adduct": "[M+H]+",
+    "collision_energy": 20,
+    "peaks": [
+      {"mz": 177.1022, "intensity": 0.7},
+      {"mz": 160.0757, "intensity": 1.0},
+      {"mz": 132.0808, "intensity": 0.44}
+    ]
+  },
+  {
+    "name": "Acetaminophen",
+    "smiles": "CC(=O)Nc1ccc(O)cc1",
+    "formula": "C8H9NO2",
+    "role": "drug",
+    "molecule_class": "analgesic",
+    "precursor_mz": 152.0706,
+    "adduct": "[M+H]+",
+    "collision_energy": 20,
+    "peaks": [
+      {"mz": 152.0706, "intensity": 0.85},
+      {"mz": 110.0601, "intensity": 1.0},
+      {"mz": 93.0335, "intensity": 0.31}
+    ]
+  }
+]
