@@ -1,0 +1,27 @@
+name: Scientific API regression tests
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  python-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install locked research dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Check Python module syntax
+        run: python -m compileall -q backend
+      - name: API and model regression suite
+        run: python -m pytest -q
