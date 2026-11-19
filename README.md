@@ -64,12 +64,6 @@ Review secrets, trust boundaries, external services and permission handling. Use
 
 **These are intended gates, not an assertion of passing tests.** Kubernetes is unnecessary for purely static pages; reassess it only where multi-service infrastructure warrants the complexity.
 
-## Next engineering milestones
-
-1. Reproducible scientific environment and unit tests.
-2. Model data lineage, evaluation and drift-monitoring plan.
-3. API health/contract tests and safe deployment process.
-
 ## Contributions and release policy
 
 Use reviewable branches and pull requests. Don't add unlicensed visual assets, mock client testimonials, private customer data or unverified integrations. Owners approve public releases; note remaining limitations in the release report.
